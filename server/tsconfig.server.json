@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "outDir": "dist",
+    "rootDir": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "server.ts",
+    "drizzle.config.ts",
+    "test.ts",
+    "config/**/*.ts",
+    "controllers/**/*.ts",
+    "routes/**/*.ts",
+    "services/**/*.ts",
+    "models/**/*.ts",
+    "middleware/**/*.ts",
+    "types/**/*.ts"
+  ]
+}

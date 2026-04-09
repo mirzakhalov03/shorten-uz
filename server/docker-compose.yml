@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16
+    container_name: url-shortener-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: url_user
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: url_shortener
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U url_user -d url_shortener"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url-shortener-app
+    restart: unless-stopped
+
+    ports:
+      - "3888:3000"
+
+    environment:
+      DATABASE_URL: postgresql://url_user:1234@db:5432/url_shortener
+      JWT_SECRET: local_jwt_123123
+      JWT_REFRESH_SECRET: local_refresh_secret_123123
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: url_user
+      DB_PASSWORD: 1234
+      DB_NAME: url_shortener
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,https://shorten.uz,https://www.shorten.uz
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
