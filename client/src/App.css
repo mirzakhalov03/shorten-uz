@@ -1,37 +1,53 @@
 .soft-glow {
-	pointer-events: none;
-	position: absolute;
-	z-index: 0;
-	width: 44rem;
-	height: 44rem;
-	border-radius: 9999px;
-	filter: blur(84px);
-	opacity: 0.4;
-	transition: opacity 0.3s ease;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+  width: 44rem;
+  height: 44rem;
+  border-radius: 9999px;
+  filter: blur(84px);
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
 }
 
 .soft-glow-left {
-	top: -17rem;
-	left: -11rem;
-	background: radial-gradient(circle at center, rgba(99, 102, 241, 0.45) 0%, rgba(99, 102, 241, 0) 70%);
+  top: -17rem;
+  left: -11rem;
+  background: radial-gradient(
+    circle at center,
+    rgba(99, 102, 241, 0.45) 0%,
+    rgba(99, 102, 241, 0) 70%
+  );
 }
 
 .soft-glow-right {
-	top: -19rem;
-	right: -14rem;
-	background: radial-gradient(circle at center, rgba(168, 85, 247, 0.34) 0%, rgba(168, 85, 247, 0) 72%);
+  top: -19rem;
+  right: -14rem;
+  background: radial-gradient(
+    circle at center,
+    rgba(168, 85, 247, 0.34) 0%,
+    rgba(168, 85, 247, 0) 72%
+  );
 }
 
 .dark .soft-glow-left {
-	background: radial-gradient(circle at center, rgba(79, 70, 229, 0.38) 0%, rgba(79, 70, 229, 0) 73%);
-	opacity: 0.48;
+  background: radial-gradient(
+    circle at center,
+    rgba(79, 70, 229, 0.38) 0%,
+    rgba(79, 70, 229, 0) 73%
+  );
+  opacity: 0.48;
 }
 
 .dark .soft-glow-right {
-	background: radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0) 72%);
-	opacity: 0.45;
+  background: radial-gradient(
+    circle at center,
+    rgba(139, 92, 246, 0.3) 0%,
+    rgba(139, 92, 246, 0) 72%
+  );
+  opacity: 0.45;
 }
 
 .input-shell {
-	backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }

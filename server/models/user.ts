@@ -1,17 +1,14 @@
-import { db } from "../database/index";
-import { users } from "../database/schema";
-import { eq } from "drizzle-orm";
-import { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { db } from '../database/index';
+import { users } from '../database/schema';
+import { eq } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 
 type UserRow = InferSelectModel<typeof users>;
 type NewUserInput = InferInsertModel<typeof users>;
 
 export default class User {
   static async createUser(userData: NewUserInput): Promise<UserRow> {
-    const [newUser] = await db
-      .insert(users)
-      .values(userData)
-      .returning();
+    const [newUser] = await db.insert(users).values(userData).returning();
 
     return newUser;
   }
@@ -35,7 +32,10 @@ export default class User {
     return userRow;
   }
 
-  static async updateTokens(id: number, tokens: { accessToken: string; refreshToken: string }) {
+  static async updateTokens(
+    id: number,
+    tokens: { accessToken: string; refreshToken: string },
+  ) {
     await db
       .update(users)
       .set({

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { Copy, Check, Trash2, ExternalLink } from "lucide-react";
-import { toast } from "sonner";
-import { getUserLinks, deleteLink } from "../api/services/url.service";
-import { API_BASE_URL } from "../api/baseClient";
+import { useEffect, useState } from 'react';
+import { Copy, Check, Trash2, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
+import { getUserLinks, deleteLink } from '../api/services/url.service';
+import { API_BASE_URL } from '../api/baseClient';
 
 interface Link {
   id: string;
@@ -12,7 +12,11 @@ interface Link {
   createdAt: string;
 }
 
-export const Profile = ({ user }: { user: { email: string; username?: string } }) => {
+export const Profile = ({
+  user,
+}: {
+  user: { email: string; username?: string };
+}) => {
   const [links, setLinks] = useState<Link[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -20,7 +24,7 @@ export const Profile = ({ user }: { user: { email: string; username?: string } }
   useEffect(() => {
     getUserLinks()
       .then(setLinks)
-      .catch(() => toast.error("Failed to load links"))
+      .catch(() => toast.error('Failed to load links'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -28,15 +32,15 @@ export const Profile = ({ user }: { user: { email: string; username?: string } }
     try {
       await deleteLink(id);
       setLinks((prev) => prev.filter((l) => l.id !== id));
-      toast.success("Link deleted");
+      toast.success('Link deleted');
     } catch {
-      toast.error("Failed to delete link");
+      toast.error('Failed to delete link');
     }
   };
 
   const handleCopy = async (shortLink: string, id: string) => {
     await navigator.clipboard.writeText(`${API_BASE_URL}/${shortLink}`);
-    toast.success("Copied to clipboard!");
+    toast.success('Copied to clipboard!');
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };

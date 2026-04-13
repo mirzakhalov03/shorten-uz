@@ -10,13 +10,13 @@ services:
       POSTGRES_DB: url_shortener
 
     ports:
-      - "5433:5432"
+      - '5433:5432'
 
     volumes:
       - db_data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U url_user -d url_shortener"]
+      test: ['CMD-SHELL', 'pg_isready -U url_user -d url_shortener']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "3888:3000"
+      - '3888:3000'
 
     environment:
       DATABASE_URL: postgresql://url_user:1234@db:5432/url_shortener

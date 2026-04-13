@@ -1,7 +1,7 @@
-import { and, eq } from "drizzle-orm";
-import { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { db } from "../database";
-import { urls } from "../database/schema";
+import { and, eq } from 'drizzle-orm';
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import { db } from '../database';
+import { urls } from '../database/schema';
 
 type LinkRow = InferSelectModel<typeof urls>;
 type NewLinkInput = InferInsertModel<typeof urls>;
@@ -29,7 +29,10 @@ export default class Link {
     return link;
   }
 
-  static async deleteByIdAndUserId(id: string, userId: number): Promise<LinkRow | null> {
+  static async deleteByIdAndUserId(
+    id: string,
+    userId: number,
+  ): Promise<LinkRow | null> {
     const [deleted] = await db
       .delete(urls)
       .where(and(eq(urls.id, id), eq(urls.userId, userId)))

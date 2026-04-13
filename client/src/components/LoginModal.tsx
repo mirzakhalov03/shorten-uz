@@ -1,37 +1,60 @@
-import { X } from "lucide-react"
-import { useState } from "react"
-import { toast } from "sonner"
-import { login, register } from "../api/services/auth.service"
+import { X } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { login, register } from '../api/services/auth.service';
 
-export const LoginModal = ({ setIsSignInOpen, setUser }: { setIsSignInOpen: (isOpen: boolean) => void; setUser: (user: { email: string; username?: string }) => void }) => {
+export const LoginModal = ({
+  setIsSignInOpen,
+  setUser,
+}: {
+  setIsSignInOpen: (isOpen: boolean) => void;
+  setUser: (user: { email: string; username?: string }) => void;
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [fullName, setFullName] = useState("");
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [fullName, setFullName] = useState('');
 
-const submit = async () => {
-  try {
-    if (mode === "register") {
-      const data = await register({ email, password, fullName });
-      setUser({ email: data.user.email, username: data.user.fullName ?? undefined });
-      toast.success("Account created successfully!");
-    } else {
-      const data = await login({ email, password });
-      setUser({ email: data.user.email, username: data.user.fullName ?? undefined });
-      toast.success("Signed in successfully!");
+  const submit = async () => {
+    try {
+      if (mode === 'register') {
+        const data = await register({ email, password, fullName });
+        setUser({
+          email: data.user.email,
+          username: data.user.fullName ?? undefined,
+        });
+        toast.success('Account created successfully!');
+      } else {
+        const data = await login({ email, password });
+        setUser({
+          email: data.user.email,
+          username: data.user.fullName ?? undefined,
+        });
+        toast.success('Signed in successfully!');
+      }
+
+      setIsSignInOpen(false);
+    } catch (err: unknown) {
+      const errorMessage =
+        (
+          err as {
+            response?: { data?: { error?: string; message?: string } };
+            message?: string;
+          }
+        )?.response?.data?.error ||
+        (
+          err as {
+            response?: { data?: { error?: string; message?: string } };
+            message?: string;
+          }
+        )?.response?.data?.message ||
+        (err as { message?: string })?.message ||
+        'Something went wrong. Please try again.';
+      toast.error(errorMessage);
     }
-
-    setIsSignInOpen(false);
-  } catch (err: unknown) {
-    const errorMessage = (err as { response?: { data?: { error?: string; message?: string } }; message?: string })?.response?.data?.error
-      || (err as { response?: { data?: { error?: string; message?: string } }; message?: string })?.response?.data?.message
-      || (err as { message?: string })?.message
-      || "Something went wrong. Please try again.";
-    toast.error(errorMessage);
-  }
-};
+  };
   return (
-   <div
+    <div
       role="presentation"
       onClick={() => setIsSignInOpen(false)}
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-5 py-8 backdrop-blur-sm"
@@ -39,7 +62,7 @@ const submit = async () => {
       <section
         role="dialog"
         aria-modal="true"
-        aria-label={mode === "login" ? "Sign in" : "Sign up"}
+        aria-label={mode === 'login' ? 'Sign in' : 'Sign up'}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#151a33]"
       >
@@ -47,12 +70,12 @@ const submit = async () => {
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
-              {mode === "login" ? "Sign In" : "Sign Up"}
+              {mode === 'login' ? 'Sign In' : 'Sign Up'}
             </h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-300/70">
-              {mode === "login"
-                ? "Continue to access your shortened links."
-                : "Create an account to start shortening links."}
+              {mode === 'login'
+                ? 'Continue to access your shortened links.'
+                : 'Create an account to start shortening links.'}
             </p>
           </div>
           <button
@@ -67,7 +90,7 @@ const submit = async () => {
 
         {/* Form */}
         <div className="space-y-3">
-          {mode === "register" && (
+          {mode === 'register' && (
             <>
               <label
                 className="block text-sm font-medium text-slate-700 dark:text-slate-200"
@@ -124,29 +147,29 @@ const submit = async () => {
             className="rounded-xl mt-3 w-full bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:opacity-95"
             onClick={submit}
           >
-            {mode === "login" ? "Sign In" : "Sign Up"}
+            {mode === 'login' ? 'Sign In' : 'Sign Up'}
           </button>
         </div>
 
         <p className="mt-3 text-center text-sm text-slate-500 dark:text-slate-300/70">
-          {mode === "login" ? (
+          {mode === 'login' ? (
             <>
-              Don’t have an account?{" "}
+              Don’t have an account?{' '}
               <button
                 type="button"
                 className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                onClick={() => setMode("register")}
+                onClick={() => setMode('register')}
               >
                 Sign Up
               </button>
             </>
           ) : (
             <>
-              Already have an account?{" "}
+              Already have an account?{' '}
               <button
                 type="button"
                 className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                onClick={() => setMode("login")}
+                onClick={() => setMode('login')}
               >
                 Sign In
               </button>
@@ -155,5 +178,5 @@ const submit = async () => {
         </p>
       </section>
     </div>
-  )
-}
+  );
+};

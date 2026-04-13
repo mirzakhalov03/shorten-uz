@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Link2, Copy, Check } from "lucide-react";
-import { toast } from "sonner";
-import { shortenUrl } from "../api/services/url.service";
-import { API_BASE_URL } from "../api/baseClient";
+import { useState } from 'react';
+import { Link2, Copy, Check } from 'lucide-react';
+import { toast } from 'sonner';
+import { shortenUrl } from '../api/services/url.service';
+import { API_BASE_URL } from '../api/baseClient';
 
 export const HomePage = () => {
-  const [inputUrl, setInputUrl] = useState("");
-  const [shortLink, setShortLink] = useState("");
+  const [inputUrl, setInputUrl] = useState('');
+  const [shortLink, setShortLink] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
   return (
@@ -35,7 +35,7 @@ export const HomePage = () => {
           value={inputUrl}
           onChange={(e) => {
             setInputUrl(e.target.value);
-            setError("");
+            setError('');
           }}
           placeholder="Paste your long URL here..."
           className="h-9 outline-none flex-1 bg-transparent text-base text-slate-700 placeholder:text-slate-400 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-400"
@@ -46,15 +46,15 @@ export const HomePage = () => {
           disabled={loading || !inputUrl.trim()}
           onClick={async () => {
             setLoading(true);
-            setError("");
-            setShortLink("");
+            setError('');
+            setShortLink('');
             try {
               const data = await shortenUrl(inputUrl.trim());
               setShortLink(`${API_BASE_URL}/${data.shortLink}`);
-              toast.success("URL shortened successfully!");
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              toast.success('URL shortened successfully!');
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (err: any) {
-              const msg = err.response?.data?.error || "Something went wrong";
+              const msg = err.response?.data?.error || 'Something went wrong';
               setError(msg);
             } finally {
               setLoading(false);
@@ -62,7 +62,7 @@ export const HomePage = () => {
           }}
           className="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 sm:px-8 sm:py-2.5 sm:text-lg font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
         >
-          {loading ? "Shortening..." : "Shorten"}
+          {loading ? 'Shortening...' : 'Shorten'}
         </button>
       </div>
 
@@ -82,7 +82,7 @@ export const HomePage = () => {
             type="button"
             onClick={async () => {
               await navigator.clipboard.writeText(shortLink);
-              toast.success("Copied to clipboard!");
+              toast.success('Copied to clipboard!');
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             }}

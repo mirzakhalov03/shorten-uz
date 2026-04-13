@@ -1,6 +1,12 @@
-import { Router } from "express";
-import { register, login, refreshAccessToken, logout, me } from "../controllers/auth.controller";
-import { authenticate } from "../middleware/auth";
+import { Router } from 'express';
+import {
+  register,
+  login,
+  refreshAccessToken,
+  logout,
+  me,
+} from '../controllers/auth.controller';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
@@ -29,7 +35,7 @@ const router = Router();
  *       201:
  *         description: User registered
  */
-router.post("/register", register);
+router.post('/register', register);
 
 /**
  * @openapi
@@ -55,7 +61,7 @@ router.post("/register", register);
  *       200:
  *         description: Login successful
  */
-router.post("/login", login);
+router.post('/login', login);
 
 /**
  * @openapi
@@ -68,7 +74,7 @@ router.post("/login", login);
  *       200:
  *         description: Token refreshed
  */
-router.post("/refresh", refreshAccessToken);
+router.post('/refresh', refreshAccessToken);
 
 /**
  * @openapi
@@ -83,7 +89,7 @@ router.post("/refresh", refreshAccessToken);
  *       200:
  *         description: Logout successful
  */
-router.post("/logout", authenticate, logout);
+router.post('/logout', authenticate, logout);
 
 /**
  * @openapi
@@ -98,6 +104,6 @@ router.post("/logout", authenticate, logout);
  *       200:
  *         description: Current user returned
  */
-router.get("/me", authenticate, me);
+router.get('/me', authenticate, me);
 
 export default router;

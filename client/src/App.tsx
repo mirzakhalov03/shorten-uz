@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import { Toaster } from "sonner";
-import "./App.css";
-import { LoginModal } from "./components/LoginModal";
-import { Navbar } from "./components/Navbar";
-import { HomePage } from "./pages/HomePage";
-import { ProfilePage } from "./pages/ProfilePage";
-import { tokenStorage } from "./api/baseClient";
-import { getCurrentUser } from "./api/services/auth.service";
+import { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import './App.css';
+import { LoginModal } from './components/LoginModal';
+import { Navbar } from './components/Navbar';
+import { HomePage } from './pages/HomePage';
+import { ProfilePage } from './pages/ProfilePage';
+import { tokenStorage } from './api/baseClient';
+import { getCurrentUser } from './api/services/auth.service';
 
-const THEME_STORAGE_KEY = "theme";
+const THEME_STORAGE_KEY = 'theme';
 
 function App() {
   const [isDark, setIsDark] = useState(
-    () => localStorage.getItem(THEME_STORAGE_KEY) === "dark",
+    () => localStorage.getItem(THEME_STORAGE_KEY) === 'dark',
   );
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [user, setUser] = useState<{ email: string; username?: string } | null>(
@@ -22,8 +22,8 @@ function App() {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem(THEME_STORAGE_KEY, isDark ? "dark" : "light");
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem(THEME_STORAGE_KEY, isDark ? 'dark' : 'light');
   }, [isDark]);
 
   useEffect(() => {
