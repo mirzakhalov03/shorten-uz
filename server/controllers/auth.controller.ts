@@ -1,24 +1,13 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { randomUUID } from "crypto";
-import { db } from "../database";
-import { users, sessions } from "../database/schema";
-import { eq } from "drizzle-orm";
 import { AuthRequest } from "../middleware/auth";
-import { getErrorMessage, sendError } from "../services/error-response";
-import { isExpired, validatePasswordOrSendError, verifyRefreshTokenOrSendError } from "../helpers/authUtils";
-
-
-const generateTokens = (userId: number) => {
-  const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: "15m" });
-  const refreshToken = jwt.sign(
-    { userId, tokenId: randomUUID() },
-    process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: "7d" }
-  );
-  return { accessToken, refreshToken };
-};
+import { sendCaughtError, sendError } from "../services/error-response";
+import {
+  getCurrentUser,
+  loginUser,
+  logoutUser,
+  refreshUserAccessToken,
+  registerUser,
+} from "../services/auth.service";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -31,51 +20,15 @@ export const register = async (req: Request, res: Response) => {
       return;
     }
 
-    const existing = await db.query.users.findFirst({ where: eq(users.email, email) });
-    if (existing) {
-      sendError(res, 409, "This email is already registered.", {
-        devMessage: `Duplicate email during registration: ${email}`,
-        code: "CONFLICT",
-      });
-      return;
-    }
-
-    const passwordHash = await bcrypt.hash(password, 10);
-    const { accessToken, refreshToken } = generateTokens(0); // temp id
-
-    const [user] = await db.insert(users).values({
-      email,
-      fullName,
-      passwordHash,
-      accessToken,
-      refreshToken,
-    }).returning();
-
-    const tokens = generateTokens(user.id);
-
-    await db.update(users).set({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    }).where(eq(users.id, user.id));
-
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await db.insert(sessions).values({
-      userId: user.id,
-      refreshToken: tokens.refreshToken,
-      expiresAt,
-    });
+    const result = await registerUser({ email, fullName, password });
 
     res.status(201).json({
-      user: { id: user.id, email: user.email, fullName: user.fullName },
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
     });
   } catch (err) {
-    console.error(err);
-    sendError(res, 500, "Unable to create your account right now.", {
-      devMessage: getErrorMessage(err),
-      code: "INTERNAL_ERROR",
-    });
+    sendCaughtError(res, err, "Unable to create your account right now.");
   }
 };
 
@@ -90,42 +43,15 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    const user = await db.query.users.findFirst({ where: eq(users.email, email) });
-    if (!user) {
-      sendError(res, 401, "Invalid email or password.", {
-        devMessage: `Login failed: user not found for email ${email}`,
-        code: "AUTH_INVALID_CREDENTIALS",
-      });
-      return;
-    }
-
-    if (!(await validatePasswordOrSendError(res, password, user.passwordHash, user.id))) return;
-
-    const tokens = generateTokens(user.id);
-
-    await db.update(users).set({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    }).where(eq(users.id, user.id));
-
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await db.insert(sessions).values({
-      userId: user.id,
-      refreshToken: tokens.refreshToken,
-      expiresAt,
-    });
+    const result = await loginUser({ email, password });
 
     res.json({
-      user: { id: user.id, email: user.email, fullName: user.fullName },
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
     });
   } catch (err) {
-    console.error(err);
-    sendError(res, 500, "Unable to sign you in right now.", {
-      devMessage: getErrorMessage(err),
-      code: "INTERNAL_ERROR",
-    });
+    sendCaughtError(res, err, "Unable to sign you in right now.");
   }
 };
 
@@ -140,66 +66,24 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
       return;
     }
 
-    const payload = verifyRefreshTokenOrSendError(res, refreshToken);
-    if (!payload) {
-      return;
-    }
-
-    const session = await db.query.sessions.findFirst({
-      where: eq(sessions.refreshToken, refreshToken),
-    });
-    if (!session || isExpired(session.expiresAt)) {
-        sendError(res, 401, "Your session has expired. Please sign in again.", {
-          devMessage: "Refresh session missing or expired",
-          code: "AUTH_SESSION_EXPIRED",
-      });
-      return;
-    }
-
-
-    await db.delete(sessions).where(eq(sessions.id, session.id));
-
-    const tokens = generateTokens(payload.userId);
-
-    await db.update(users).set({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    }).where(eq(users.id, payload.userId));
-
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await db.insert(sessions).values({
-      userId: payload.userId,
-      refreshToken: tokens.refreshToken,
-      expiresAt,
-    });
+    const tokens = await refreshUserAccessToken(refreshToken);
 
     res.json({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     });
   } catch (err) {
-    console.error(err);
-    sendError(res, 500, "Unable to refresh your session right now.", {
-      devMessage: getErrorMessage(err),
-      code: "INTERNAL_ERROR",
-    });
+    sendCaughtError(res, err, "Unable to refresh your session right now.");
   }
 };
 
 export const logout = async (req: AuthRequest, res: Response) => {
   try {
-    const header = req.headers.authorization;
-    const token = header?.split(" ")[1];
-    if (token && req.userId) {
-      await db.delete(sessions).where(eq(sessions.userId, req.userId));
-    }
+    await logoutUser(req.userId);
+
     res.json({ message: "Logged out" });
   } catch (err) {
-    console.error(err);
-    sendError(res, 500, "Unable to log out right now.", {
-      devMessage: getErrorMessage(err),
-      code: "INTERNAL_ERROR",
-    });
+    sendCaughtError(res, err, "Unable to log out right now.");
   }
 };
 
@@ -214,30 +98,9 @@ export const me = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-    });
-
-    if (!user) {
-      sendError(res, 404, "Account not found.", {
-        devMessage: `No user found for userId ${userId}`,
-        code: "NOT_FOUND",
-      });
-      return;
-    }
-
-    res.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-      },
-    });
+    const result = await getCurrentUser(userId);
+    res.json(result);
   } catch (err) {
-    console.error(err);
-    sendError(res, 500, "Unable to load your profile right now.", {
-      devMessage: getErrorMessage(err),
-      code: "INTERNAL_ERROR",
-    });
+    sendCaughtError(res, err, "Unable to load your profile right now.");
   }
 };
