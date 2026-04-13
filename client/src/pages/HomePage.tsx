@@ -13,14 +13,14 @@ export const HomePage = () => {
 
   return (
     <main className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center px-5 pb-8 pt-14 text-center md:px-8">
-      <h1 className="max-w-5xl text-5xl font-extrabold leading-[0.95] tracking-[-0.03em] text-[#171732] md:text-7xl dark:text-white">
+      <h1 className="max-w-5xl text-4xl lg:text-5xl font-extrabold leading-[0.95] tracking-[-0.03em] text-[#171732] md:text-7xl dark:text-white">
         <span className="block">Shorten links.</span>
         <span className="block bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
           Expand possibilities.
         </span>
       </h1>
 
-      <p className="mt-6 max-w-3xl text-xl leading-relaxed text-indigo-950/65 dark:text-indigo-100/70 md:text-2xl">
+      <p className="mt-6 max-w-3xl text-lg leading-relaxed text-indigo-950/65 dark:text-indigo-100/70 md:text-2xl">
         The modern URL shortener for people who value speed, security, and
         aesthetics. Create memorable links in seconds.
       </p>
@@ -60,7 +60,7 @@ export const HomePage = () => {
               setLoading(false);
             }
           }}
-          className="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-2.5 text-lg font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
+          className="rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 sm:px-8 sm:py-2.5 sm:text-lg font-semibold text-white transition hover:opacity-95 disabled:opacity-50"
         >
           {loading ? "Shortening..." : "Shorten"}
         </button>
