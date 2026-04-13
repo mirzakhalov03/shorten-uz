@@ -1,35 +1,25 @@
 import { nanoid } from "nanoid";
-import { and, eq } from "drizzle-orm";
-import { db } from "../database";
-import { urls } from "../database/schema";
 import { AppError } from "./app-error";
+import Link from "../models/link";
 
 export const createUrl = async (input: { originalLink: string; userId?: number | null }) => {
   const shortLink = nanoid(8);
 
-  const [link] = await db
-    .insert(urls)
-    .values({
-      originalLink: input.originalLink,
-      shortLink,
-      userId: input.userId ?? null,
-    })
-    .returning();
+  const link = await Link.createLink({
+    originalLink: input.originalLink,
+    shortLink,
+    userId: input.userId ?? null,
+  });
 
   return link;
 };
 
 export const getLinksByUserId = async (userId: number) => {
-  return await db.query.urls.findMany({
-    where: eq(urls.userId, userId),
-    orderBy: (table, { desc }) => [desc(table.createdAt)],
-  });
+  return await Link.findManyByUserId(userId);
 };
 
 export const getOriginalLinkByShortCode = async (shortLink: string) => {
-  const link = await db.query.urls.findFirst({
-    where: eq(urls.shortLink, shortLink),
-  });
+  const link = await Link.findByShortLink(shortLink);
 
   if (!link) {
     throw new AppError(404, "This short link does not exist.", {
@@ -42,10 +32,7 @@ export const getOriginalLinkByShortCode = async (shortLink: string) => {
 };
 
 export const deleteUserLinkById = async (id: string, userId: number) => {
-  const [deleted] = await db
-    .delete(urls)
-    .where(and(eq(urls.id, id), eq(urls.userId, userId)))
-    .returning();
+  const deleted = await Link.deleteByIdAndUserId(id, userId);
 
   if (!deleted) {
     throw new AppError(404, "We could not find that link.", {
