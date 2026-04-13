@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { db } from "../database";
-import { users, sessions } from "../database/schema";
+import { sessions } from "../database/schema";
 import { AppError } from "./app-error";
+import User from "../models/user";
 
 type PublicUser = {
   id: number;
@@ -50,7 +51,7 @@ export const registerUser = async (input: {
   fullName: string;
   password: string;
 }): Promise<{ user: PublicUser } & AuthTokens> => {
-  const existing = await db.query.users.findFirst({ where: eq(users.email, input.email) });
+  const existing = await User.findByEmail(input.email);
   if (existing) {
     throw new AppError(409, "This email is already registered.", {
       code: "CONFLICT",
@@ -60,24 +61,15 @@ export const registerUser = async (input: {
 
   const passwordHash = await bcrypt.hash(input.password, 10);
 
-  const [createdUser] = await db
-    .insert(users)
-    .values({
-      email: input.email,
-      fullName: input.fullName,
-      passwordHash,
-    })
-    .returning();
+  const createdUser = await User.createUser({
+    email: input.email,
+    fullName: input.fullName,
+    passwordHash,
+  });
 
   const tokens = generateTokens(createdUser.id);
 
-  await db
-    .update(users)
-    .set({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    })
-    .where(eq(users.id, createdUser.id));
+  await User.updateTokens(createdUser.id, tokens);
 
   await createSession(createdUser.id, tokens.refreshToken);
 
@@ -91,7 +83,7 @@ export const loginUser = async (input: {
   email: string;
   password: string;
 }): Promise<{ user: PublicUser } & AuthTokens> => {
-  const user = await db.query.users.findFirst({ where: eq(users.email, input.email) });
+  const user = await User.findByEmail(input.email);
   if (!user) {
     throw new AppError(401, "Invalid email or password.", {
       code: "AUTH_INVALID_CREDENTIALS",
@@ -109,13 +101,7 @@ export const loginUser = async (input: {
 
   const tokens = generateTokens(user.id);
 
-  await db
-    .update(users)
-    .set({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    })
-    .where(eq(users.id, user.id));
+  await User.updateTokens(user.id, tokens);
 
   await createSession(user.id, tokens.refreshToken);
 
@@ -154,13 +140,7 @@ export const refreshUserAccessToken = async (
 
   const tokens = generateTokens(payload.userId);
 
-  await db
-    .update(users)
-    .set({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    })
-    .where(eq(users.id, payload.userId));
+  await User.updateTokens(payload.userId, tokens);
 
   await createSession(payload.userId, tokens.refreshToken);
 
@@ -176,7 +156,7 @@ export const logoutUser = async (userId?: number) => {
 };
 
 export const getCurrentUser = async (userId: number): Promise<{ user: PublicUser }> => {
-  const user = await db.query.users.findFirst({ where: eq(users.id, userId) });
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new AppError(404, "Account not found.", {
