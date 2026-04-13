@@ -46,12 +46,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -61,9 +57,7 @@
         "sessions_refresh_token_unique": {
           "name": "sessions_refresh_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "refresh_token"
-          ]
+          "columns": ["refresh_token"]
         }
       },
       "policies": {},
@@ -113,9 +107,7 @@
         "links_short_link_unique": {
           "name": "links_short_link_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "short_link"
-          ]
+          "columns": ["short_link"]
         }
       },
       "policies": {},
@@ -177,23 +169,17 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "users_access_token_unique": {
           "name": "users_access_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "access_token"
-          ]
+          "columns": ["access_token"]
         },
         "users_refresh_token_unique": {
           "name": "users_refresh_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "refresh_token"
-          ]
+          "columns": ["refresh_token"]
         }
       },
       "policies": {},

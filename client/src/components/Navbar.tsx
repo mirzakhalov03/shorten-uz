@@ -1,11 +1,24 @@
-import { Moon, Scissors, Sun } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { toast } from "sonner";
-import { logout } from "../api/services/auth.service";
+import { Moon, Scissors, Sun } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { logout } from '../api/services/auth.service';
 
-
-export const Navbar = ({ user, setUser, isDark, setIsDark, setIsSignInOpen, isAuthLoading }: { user: { email: string; username?: string } | null; setUser: (user: { email: string; username?: string } | null) => void; isDark: boolean; setIsDark: (isDark: boolean) => void; setIsSignInOpen: (isOpen: boolean) => void; isAuthLoading: boolean }) => {
+export const Navbar = ({
+  user,
+  setUser,
+  isDark,
+  setIsDark,
+  setIsSignInOpen,
+  isAuthLoading,
+}: {
+  user: { email: string; username?: string } | null;
+  setUser: (user: { email: string; username?: string } | null) => void;
+  isDark: boolean;
+  setIsDark: (isDark: boolean) => void;
+  setIsSignInOpen: (isOpen: boolean) => void;
+  isAuthLoading: boolean;
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -19,10 +32,10 @@ export const Navbar = ({ user, setUser, isDark, setIsDark, setIsSignInOpen, isAu
         setDropdownOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  
+
   async function onLogout() {
     try {
       await logout();
@@ -68,7 +81,10 @@ export const Navbar = ({ user, setUser, isDark, setIsDark, setIsSignInOpen, isAu
               {dropdownOpen && (
                 <div className="absolute overflow-hidden right-0 mt-2 w-36 rounded-lg border border-slate-200/70 bg-white shadow-lg dark:border-white/15 dark:bg-[#0f1327] z-50">
                   <button
-                    onClick={() => { navigate('/profile'); setDropdownOpen(false); }}
+                    onClick={() => {
+                      navigate('/profile');
+                      setDropdownOpen(false);
+                    }}
                     className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10"
                   >
                     My Links
@@ -92,8 +108,7 @@ export const Navbar = ({ user, setUser, isDark, setIsDark, setIsSignInOpen, isAu
             </button>
           )}
         </div>
-
       </div>
     </header>
   );
-}
+};

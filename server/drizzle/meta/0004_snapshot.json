@@ -45,13 +45,9 @@
         "sessions_user_id_users_id_fk": {
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -60,9 +56,7 @@
       "uniqueConstraints": {
         "sessions_refresh_token_unique": {
           "name": "sessions_refresh_token_unique",
-          "columns": [
-            "refresh_token"
-          ],
+          "columns": ["refresh_token"],
           "nullsNotDistinct": false
         }
       },
@@ -112,9 +106,7 @@
       "uniqueConstraints": {
         "links_short_link_unique": {
           "name": "links_short_link_unique",
-          "columns": [
-            "short_link"
-          ],
+          "columns": ["short_link"],
           "nullsNotDistinct": false
         }
       },
@@ -164,9 +156,7 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "nullsNotDistinct": false
         }
       },
