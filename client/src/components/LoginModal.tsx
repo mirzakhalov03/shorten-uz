@@ -1,15 +1,24 @@
 import { X } from 'lucide-react';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { login, register } from '../api/services/auth.service';
+import type { AppUser } from '../types/user';
+
+interface LoginModalProps {
+  setIsSignInOpen: (isOpen: boolean) => void;
+  setUser: (user: AppUser) => void;
+}
+
+interface ApiErrorData {
+  error?: string;
+  message?: string;
+}
 
 export const LoginModal = ({
   setIsSignInOpen,
   setUser,
-}: {
-  setIsSignInOpen: (isOpen: boolean) => void;
-  setUser: (user: { email: string; username?: string }) => void;
-}) => {
+}: LoginModalProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -35,21 +44,18 @@ export const LoginModal = ({
 
       setIsSignInOpen(false);
     } catch (err: unknown) {
-      const errorMessage =
-        (
-          err as {
-            response?: { data?: { error?: string; message?: string } };
-            message?: string;
-          }
-        )?.response?.data?.error ||
-        (
-          err as {
-            response?: { data?: { error?: string; message?: string } };
-            message?: string;
-          }
-        )?.response?.data?.message ||
-        (err as { message?: string })?.message ||
-        'Something went wrong. Please try again.';
+      let errorMessage = 'Something went wrong. Please try again.';
+
+      if (isAxiosError<ApiErrorData>(err)) {
+        errorMessage =
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          err.message ||
+          errorMessage;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
       toast.error(errorMessage);
     }
   };

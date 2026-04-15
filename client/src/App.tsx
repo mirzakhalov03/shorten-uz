@@ -8,6 +8,7 @@ import { HomePage } from './pages/HomePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { tokenStorage } from './api/baseClient';
 import { getCurrentUser } from './api/services/auth.service';
+import type { AppUser } from './types/user';
 
 const THEME_STORAGE_KEY = 'theme';
 
@@ -16,9 +17,7 @@ function App() {
     () => localStorage.getItem(THEME_STORAGE_KEY) === 'dark',
   );
   const [isSignInOpen, setIsSignInOpen] = useState(false);
-  const [user, setUser] = useState<{ email: string; username?: string } | null>(
-    null,
-  );
+  const [user, setUser] = useState<AppUser | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
