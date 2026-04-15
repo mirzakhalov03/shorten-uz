@@ -1,12 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Profile } from '../components/Profile';
+import type { AppUser } from '../types/user';
+
+interface ProfilePageProps {
+  user: AppUser | null;
+}
 
 export const ProfilePage = ({
   user,
-}: {
-  user: { email: string; username?: string } | null;
-}) => {
+}: ProfilePageProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {

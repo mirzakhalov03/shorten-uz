@@ -12,10 +12,7 @@ export interface RegisterPayload {
   fullName: string;
 }
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
+export type LoginPayload = Pick<RegisterPayload, 'email' | 'password'>;
 
 export interface RefreshPayload {
   refreshToken: string;
@@ -27,10 +24,10 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
-export interface RefreshResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+export type RefreshResponse = Pick<
+  AuthResponse,
+  'accessToken' | 'refreshToken'
+>;
 
 export interface CurrentUserResponse {
   user: AuthUser;

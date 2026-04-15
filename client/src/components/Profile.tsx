@@ -3,21 +3,17 @@ import { Copy, Check, Trash2, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { getUserLinks, deleteLink } from '../api/services/url.service';
 import { API_BASE_URL } from '../api/baseClient';
+import type { ShortenResponse } from '../api/services/url.service';
+import type { AppUser } from '../types/user';
 
-interface Link {
-  id: string;
-  userId: number | null;
-  originalLink: string;
-  shortLink: string;
-  createdAt: string;
+interface ProfileProps {
+  user: AppUser;
 }
 
 export const Profile = ({
   user,
-}: {
-  user: { email: string; username?: string };
-}) => {
-  const [links, setLinks] = useState<Link[]>([]);
+}: ProfileProps) => {
+  const [links, setLinks] = useState<ShortenResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 

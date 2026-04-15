@@ -6,6 +6,7 @@ import { db } from '../database';
 import { sessions } from '../database/schema';
 import { AppError } from './appError';
 import User from '../models/user';
+import { getSessionExpirationDate } from '../helpers/authUtils';
 
 type PublicUser = {
   id: number;
@@ -17,8 +18,6 @@ type AuthTokens = {
   accessToken: string;
   refreshToken: string;
 };
-
-const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 const generateTokens = (userId: number): AuthTokens => {
   const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET!, {
@@ -34,7 +33,7 @@ const generateTokens = (userId: number): AuthTokens => {
 };
 
 const createSession = async (userId: number, refreshToken: string) => {
-  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
+  const expiresAt = getSessionExpirationDate();
   await db.insert(sessions).values({
     userId,
     refreshToken,

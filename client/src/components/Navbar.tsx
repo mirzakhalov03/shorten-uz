@@ -3,6 +3,16 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { logout } from '../api/services/auth.service';
+import type { AppUser } from '../types/user';
+
+interface NavbarProps {
+  user: AppUser | null;
+  setUser: (user: AppUser | null) => void;
+  isDark: boolean;
+  setIsDark: (isDark: boolean) => void;
+  setIsSignInOpen: (isOpen: boolean) => void;
+  isAuthLoading: boolean;
+}
 
 export const Navbar = ({
   user,
@@ -11,14 +21,7 @@ export const Navbar = ({
   setIsDark,
   setIsSignInOpen,
   isAuthLoading,
-}: {
-  user: { email: string; username?: string } | null;
-  setUser: (user: { email: string; username?: string } | null) => void;
-  isDark: boolean;
-  setIsDark: (isDark: boolean) => void;
-  setIsSignInOpen: (isOpen: boolean) => void;
-  isAuthLoading: boolean;
-}) => {
+}: NavbarProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();

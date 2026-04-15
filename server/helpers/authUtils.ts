@@ -3,6 +3,11 @@ import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { sendError } from '../services/errorResponse';
 
+export const REFRESH_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+export const getSessionExpirationDate = (from: Date = new Date()) =>
+  new Date(from.getTime() + REFRESH_TOKEN_TTL_MS);
+
 export const isPasswordValid = async (
   password: string,
   userPasswordHash: string,
